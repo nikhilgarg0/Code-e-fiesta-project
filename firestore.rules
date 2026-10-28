@@ -1,0 +1,38 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // AutoMedic Demo Security Rules:
+    // Allow public client reads for real-time dashboard subscriptions via onSnapshot.
+    // Deny ALL client-side writes. All mutations MUST pass through Next.js server route handlers
+    // which execute securely via firebase-admin with full transactional integrity and guardrails.
+
+    // 1. Workflow Runs and nested subcollections (steps)
+    match /runs/{runId} {
+      allow read: if true;
+      allow write: if false;
+
+      match /steps/{stepId} {
+        allow read: if true;
+        allow write: if false;
+      }
+    }
+
+    // 2. Incidents collection
+    match /incidents/{incidentId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // 3. System Configuration (chaos modes, demo state machine)
+    match /config/{configDoc} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Default deny-all fallback for any other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
