@@ -16,6 +16,7 @@ interface WorkflowCanvasProps {
   loading?: boolean;
   onApproveFix?: (incidentId: string) => Promise<void>;
   onRejectFix?: (incidentId: string) => Promise<void>;
+  onOpenTestLab?: () => void;
   onOpenSubmitLead?: () => void;
 }
 
@@ -26,6 +27,7 @@ export function WorkflowCanvas({
   loading,
   onApproveFix,
   onRejectFix,
+  onOpenTestLab,
   onOpenSubmitLead,
 }: WorkflowCanvasProps) {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
@@ -166,7 +168,7 @@ export function WorkflowCanvas({
 
     try {
       e.currentTarget.setPointerCapture(e.pointerId);
-    } catch {}
+    } catch { }
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -199,7 +201,7 @@ export function WorkflowCanvas({
       if (activePointerIdRef.current !== null) {
         try {
           e.currentTarget.releasePointerCapture(activePointerIdRef.current);
-        } catch {}
+        } catch { }
         activePointerIdRef.current = null;
       }
     }
@@ -269,8 +271,8 @@ export function WorkflowCanvas({
   const totalDuration = runDurationMs
     ? formatDuration(runDurationMs)
     : steps.length > 0
-    ? formatDuration(steps.reduce((acc, s) => acc + (s.durationMs || 0), 0))
-    : "—";
+      ? formatDuration(steps.reduce((acc, s) => acc + (s.durationMs || 0), 0))
+      : "—";
 
   const leadName = (run?.inputPayload?.name as string) || "Lead";
   const company = (run?.inputPayload?.company as string) || "";
@@ -342,7 +344,7 @@ export function WorkflowCanvas({
               className="h-7 px-3.5 text-[11.5px] font-medium rounded-full bg-gradient-to-b from-[#0077ED] to-[#0066CC] hover:from-[#0082FF] hover:to-[#0070E0] text-white shadow-xs transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
             >
               <PlusIcon className="w-3.5 h-3.5" />
-              <span>Submit a lead</span>
+              <span>Submit a test lead</span>
             </button>
           )}
         </div>
