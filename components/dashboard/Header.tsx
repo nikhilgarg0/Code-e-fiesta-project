@@ -2,14 +2,11 @@
 "use client";
 
 import React from "react";
-import { ShieldCheckIcon, SunIcon, MoonIcon, FlaskIcon, PlusIcon } from "./Icons";
+import { ShieldCheckIcon, PlusIcon } from "./Icons";
 import { ChaosConfig, WorkflowRun, Incident } from "@/lib/types";
 
 interface HeaderProps {
   isOnline?: boolean;
-  theme: "light" | "dark";
-  onToggleTheme: () => void;
-  onOpenTestLab: () => void;
   onOpenSubmitLead: () => void;
   chaos?: ChaosConfig | null;
   runs?: WorkflowRun[];
@@ -20,9 +17,6 @@ interface HeaderProps {
 
 export function Header({
   isOnline = true,
-  theme,
-  onToggleTheme,
-  onOpenTestLab,
   onOpenSubmitLead,
   chaos,
   runs = [],
@@ -139,39 +133,6 @@ export function Header({
 
         {/* Right: Actions */}
         <div className="flex items-center gap-2.5 shrink-0">
-          {/* Theme Toggle Button */}
-          <button
-            id="theme-toggle-btn"
-            onClick={onToggleTheme}
-            title={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
-            aria-label="Toggle theme"
-            className="w-8 h-8 rounded-full border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] text-[var(--text-secondary)] flex items-center justify-center transition-all shadow-xs active:scale-95 cursor-pointer"
-          >
-            {theme === "light" ? (
-              <MoonIcon className="w-4 h-4 text-zinc-600" />
-            ) : (
-              <SunIcon className="w-4 h-4 text-amber-400" />
-            )}
-          </button>
-
-          {/* Test Lab Drawer Button */}
-          <button
-            id="open-test-lab-btn"
-            onClick={onOpenTestLab}
-            title="Open Test Lab"
-            className={`h-8 px-3.5 rounded-full border text-[12.5px] font-medium transition-all flex items-center gap-1.5 shadow-xs active:scale-95 cursor-pointer ${
-              isChaosActive
-                ? "bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-500/30"
-                : "border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] text-[var(--text-primary)]"
-            }`}
-          >
-            <FlaskIcon className="w-3.5 h-3.5 text-[var(--accent)]" />
-            <span>Test Lab</span>
-            {isChaosActive && (
-              <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
-            )}
-          </button>
-
           {/* Submit a Lead Button (Apple System Blue CTA) */}
           <button
             id="submit-lead-header-btn"

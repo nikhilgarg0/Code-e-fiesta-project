@@ -1,12 +1,21 @@
 import { NextResponse } from "next/server";
 import { startRun } from "@/lib/engine/executor";
-import { getRecentRuns } from "@/lib/firebase/repo";
+import { getRecentRuns, resetChaosCounters } from "@/lib/firebase/repo";
 
 const DEFAULT_SAMPLE_LEAD = {
   name: "Jane Doe",
   email: "jane@acme.com",
   company: "Acme Corp",
 };
+
+const RANDOM_FAULT_SCENARIOS = [
+  "schema_drift",
+  "transient_500",
+  "rate_limit",
+  "bad_type",
+  "primary_down",
+  "bad_fix_trap",
+] as const;
 
 export async function POST(request: Request) {
   try {
@@ -19,6 +28,15 @@ export async function POST(request: Request) {
 
     const workflowName = (body.workflowName as string) || "lead_to_crm";
     const lead = (body.lead as Record<string, unknown>) || DEFAULT_SAMPLE_LEAD;
+
+    // Use random error/problem each time a new lead comes in (or use explicit mode if test suite passes it)
+    if (body.mode) {
+      await resetChaosCounters(String(body.mode));
+    } else {
+      const randomIndex = Math.floor(Math.random() * RANDOM_FAULT_SCENARIOS.length);
+      const randomFault = RANDOM_FAULT_SCENARIOS[randomIndex];
+      await resetChaosCounters(randomFault);
+    }
 
     const runId = await startRun(workflowName, lead);
     return NextResponse.json({ runId }, { status: 201 });

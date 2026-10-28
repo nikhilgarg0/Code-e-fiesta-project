@@ -2,29 +2,7 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-:root {
-  /* Apple Light System Colors & Tokens */
-  --bg: #f5f5f7;
-  --surface: #ffffff;
-  --surface-subtle: #fafafc;
-  --surface-hover: #f0f0f4;
-  --surface-active: #e5e5ea;
-  --border: rgba(0, 0, 0, 0.08);
-  --border-subtle: rgba(0, 0, 0, 0.04);
-  --border-strong: rgba(0, 0, 0, 0.16);
-  --text-primary: #1d1d1f;
-  --text-secondary: #6e6e73;
-  --text-muted: #86868b;
-  --accent: #0071e3;
-  --accent-hover: #0077ed;
-  --accent-subtle: rgba(0, 113, 227, 0.08);
-  --accent-tint: rgba(0, 113, 227, 0.15);
-  --success: #34c759;
-  --warning: #ff9500;
-  --error: #ff3b30;
-  --canvas-dots: rgba(0, 0, 0, 0.07);
-}
-
+:root,
 .dark {
   /* Apple Dark System Colors & Tokens (OLED Black & Graphite) */
   --bg: #000000;
@@ -69,16 +47,10 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.18);
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 9999px;
 }
-.dark ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-}
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
-}
-.dark ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.35);
 }
 
@@ -98,14 +70,24 @@ body {
   animation: fadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Apple Glass & Vibrancy Effects */
-.apple-glass {
-  background-color: rgba(255, 255, 255, 0.78);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
+/* Highlighting Glow on Active Node */
+@keyframes activeNodeHalo {
+  0%, 100% {
+    box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.5), 0 0 25px 5px rgba(10, 132, 255, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(10, 132, 255, 0.75), 0 0 40px 10px rgba(10, 132, 255, 0.65);
+  }
 }
 
-.dark .apple-glass {
+.node-active-glow {
+  animation: activeNodeHalo 1.4s ease-in-out infinite !important;
+  border-color: #0a84ff !important;
+  z-index: 25 !important;
+}
+
+/* Apple Glass & Vibrancy Effects */
+.apple-glass {
   background-color: rgba(28, 28, 30, 0.82);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
@@ -114,9 +96,5 @@ body {
 .apple-card {
   background-color: var(--surface);
   border: 1px solid var(--border);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-
-.dark .apple-card {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
 }

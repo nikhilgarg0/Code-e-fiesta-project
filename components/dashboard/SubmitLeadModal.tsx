@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { XIcon, SparklesIcon, PlusIcon } from "./Icons";
+import { XIcon, PlusIcon } from "./Icons";
 
 interface SubmitLeadModalProps {
   isOpen: boolean;
@@ -11,33 +11,15 @@ interface SubmitLeadModalProps {
   onErrorToast?: (error: string) => void;
 }
 
-const PRESETS = [
-  {
-    name: "Devon Vance",
-    email: "devon@vance-biotech.com",
-    company: "Vance Biotech",
-  },
-  {
-    name: "Maya Lin",
-    email: "maya@retool-demo.com",
-    company: "Retool",
-  },
-  {
-    name: "Carlos Ray",
-    email: "carlos@figma-demo.io",
-    company: "Figma",
-  },
-];
-
 export function SubmitLeadModal({
   isOpen,
   onClose,
   onRunTriggered,
   onErrorToast,
 }: SubmitLeadModalProps) {
-  const [name, setName] = useState("Devon Vance");
-  const [email, setEmail] = useState("devon@vance-biotech.com");
-  const [company, setCompany] = useState("Vance Biotech");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [company, setCompany] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Esc key closes modal
@@ -51,12 +33,6 @@ export function SubmitLeadModal({
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
-
-  const handleApplyPreset = (preset: (typeof PRESETS)[0]) => {
-    setName(preset.name);
-    setEmail(preset.email);
-    setCompany(preset.company);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -137,28 +113,8 @@ export function SubmitLeadModal({
           </button>
         </div>
 
-        {/* Preset Suggestions */}
-        <div className="pt-4 pb-2">
-          <div className="flex items-center gap-1.5 text-[11.5px] font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2">
-            <SparklesIcon className="w-3.5 h-3.5 text-[var(--accent)]" />
-            <span>Quick Fill Presets:</span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {PRESETS.map((p) => (
-              <button
-                key={p.email}
-                type="button"
-                onClick={() => handleApplyPreset(p)}
-                className="px-3 py-1 text-[11.5px] font-medium rounded-full border border-black/[0.06] dark:border-white/[0.08] bg-black/[0.03] dark:bg-white/[0.05] text-[var(--text-secondary)] hover:bg-[#0071E3]/10 hover:text-[var(--accent)] hover:border-[#0071E3]/30 transition-all cursor-pointer active:scale-95"
-              >
-                {p.name} <span className="text-[var(--text-muted)]">({p.company})</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* Form Inputs */}
-        <form onSubmit={handleSubmit} className="pt-2 space-y-3.5">
+        <form onSubmit={handleSubmit} className="pt-4 space-y-3.5">
           <div>
             <label
               htmlFor="lead-name"

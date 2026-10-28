@@ -4,6 +4,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { startRun } from "@/lib/engine/executor";
+import { resetChaosCounters } from "@/lib/firebase/repo";
+
+const RANDOM_FAULT_SCENARIOS = [
+  "schema_drift",
+  "transient_500",
+  "rate_limit",
+  "bad_type",
+  "primary_down",
+  "bad_fix_trap",
+] as const;
 
 const LeadWebhookSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -56,6 +66,11 @@ export async function POST(req: NextRequest) {
     }
 
     const { name, email, company, website } = parseResult.data;
+
+    // Use random error/problem scenario for each incoming lead
+    const randomIndex = Math.floor(Math.random() * RANDOM_FAULT_SCENARIOS.length);
+    const randomFault = RANDOM_FAULT_SCENARIOS[randomIndex];
+    await resetChaosCounters(randomFault);
 
     // 3. Trigger AutoMedic Workflow Run
     const runId = await startRun("lead_to_crm", {

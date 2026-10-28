@@ -17,8 +17,6 @@ interface RunsListProps {
   selectedRunId: string | null;
   onSelectRun: (runId: string) => void;
   loading?: boolean;
-  showHistory?: boolean;
-  onToggleHistory?: () => void;
 }
 
 type FilterType = "all" | "needs_attention" | "healed" | "healthy";
@@ -29,8 +27,6 @@ export function RunsList({
   selectedRunId,
   onSelectRun,
   loading,
-  showHistory = false,
-  onToggleHistory,
 }: RunsListProps) {
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
 
@@ -241,18 +237,11 @@ export function RunsList({
         )}
       </div>
 
-      {/* 3. Apple Sidebar Footer */}
-      {onToggleHistory && (
-        <div className="h-9 border-t border-[var(--border)] bg-[var(--surface-subtle)] px-3.5 flex items-center justify-between text-[11px] text-[var(--text-muted)] shrink-0">
-          <span>{showHistory ? "Viewing all history" : "Session scope"}</span>
-          <button
-            onClick={onToggleHistory}
-            className="text-[var(--accent)] hover:underline font-semibold transition-colors cursor-pointer"
-          >
-            {showHistory ? "Session Only" : "Show All History"}
-          </button>
-        </div>
-      )}
+      {/* 3. Apple Sidebar Footer: All Lead History */}
+      <div className="h-9 border-t border-[var(--border)] bg-[var(--surface-subtle)] px-3.5 flex items-center justify-between text-[11.5px] text-[var(--text-muted)] shrink-0 font-medium">
+        <span>Lead History</span>
+        <span className="font-semibold text-[var(--text-primary)]">{runs.length} recorded</span>
+      </div>
     </aside>
   );
 }

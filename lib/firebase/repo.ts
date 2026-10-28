@@ -273,12 +273,13 @@ export async function incrementChaosCounter(key: string): Promise<number> {
 export async function resetChaosCounters(mode?: string, resetAt?: string): Promise<ChaosConfig> {
   const docRef = adminDb.collection("config").doc("chaos");
   const docSnap = await docRef.get();
-  const currentMode = mode || (docSnap.exists ? docSnap.data()?.mode : "none") || "none";
+  const existingData = docSnap.exists ? docSnap.data() : null;
+  const currentMode = mode || existingData?.mode || "none";
 
   const updatedConfig: ChaosConfig = {
     mode: currentMode,
     counters: {},
-    resetAt: resetAt || new Date().toISOString(),
+    resetAt: resetAt || existingData?.resetAt || new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
 

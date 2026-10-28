@@ -112,7 +112,7 @@ export function useRuns() {
       const q = query(
         collection(clientDb, "runs"),
         orderBy("startedAt", "desc"),
-        limit(30)
+        limit(100)
       );
 
       unsubscribe = onSnapshot(
@@ -151,7 +151,7 @@ export function useRuns() {
     let isMounted = true;
     const fetchFallback = async () => {
       try {
-        const res = await fetch("/api/runs?limit=30");
+        const res = await fetch("/api/runs?limit=100");
         if (res.ok && isMounted) {
           const list = await res.json();
           setRuns(list);

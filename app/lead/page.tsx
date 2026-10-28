@@ -22,17 +22,6 @@ export default function LeadSubmissionPage() {
   const [submittedRunId, setSubmittedRunId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const presets = [
-    { name: "Guillermo Rauch", email: "guillermo@vercel.com", company: "Vercel", website: "https://vercel.com" },
-    { name: "Karri Saarinen", email: "karri@linear.app", company: "Linear", website: "https://linear.app" },
-    { name: "Patrick Collison", email: "patrick@stripe.com", company: "Stripe", website: "https://stripe.com" },
-  ];
-
-  const handlePreset = (preset: typeof presets[0]) => {
-    setFormData(preset);
-    setErrorMessage(null);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (submitting) return;
@@ -147,25 +136,6 @@ export default function LeadSubmissionPage() {
                 <p className="text-xs text-[var(--text-secondary)] mt-1.5 leading-relaxed">
                   Trigger the real AutoMedic workflow across Hunter.io, HubSpot, and Resend with automated anomaly recovery.
                 </p>
-              </div>
-
-              {/* Sample Presets */}
-              <div className="mb-6">
-                <div className="text-[11.5px] font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2">
-                  Quick Load Demo Presets:
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {presets.map((p) => (
-                    <button
-                      key={p.company}
-                      type="button"
-                      onClick={() => handlePreset(p)}
-                      className="px-3 py-1 text-xs font-medium rounded-full bg-black/[0.03] dark:bg-white/[0.05] hover:bg-[#0071E3]/10 hover:text-[var(--accent)] hover:border-[#0071E3]/30 border border-black/[0.06] dark:border-white/[0.08] transition-all cursor-pointer active:scale-95"
-                    >
-                      {p.company}
-                    </button>
-                  ))}
-                </div>
               </div>
 
               {/* Error Alert */}

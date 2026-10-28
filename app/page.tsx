@@ -16,7 +16,6 @@ import { SummaryRow } from "@/components/dashboard/SummaryRow";
 import { NeedsAttentionBanner } from "@/components/dashboard/NeedsAttentionBanner";
 import { RunsList } from "@/components/dashboard/RunsList";
 import { RunDetail } from "@/components/dashboard/RunDetail";
-import { TestLabDrawer } from "@/components/dashboard/TestLabDrawer";
 import { SubmitLeadModal } from "@/components/dashboard/SubmitLeadModal";
 import { ErrorBoundary } from "@/components/dashboard/ErrorBoundary";
 import { CheckCircleIcon, AlertTriangleIcon } from "@/components/dashboard/Icons";
@@ -30,41 +29,25 @@ export default function DashboardPage() {
   const { demo } = useDemo();
   const isOnline = useFirestoreConnectivity();
 
-  // Theme Management: Light theme by default, toggle to dark
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-
+  // Default to Dark Theme permanently
   useEffect(() => {
-    // Check saved preference or default to light
-    const savedTheme = localStorage.getItem("automedic_theme");
-    if (savedTheme === "dark") {
-      setTheme("dark");
-      document.documentElement.classList.add("dark");
-    } else {
-      setTheme("light");
-      document.documentElement.classList.remove("dark");
-    }
+    document.documentElement.classList.add("dark");
   }, []);
 
-  const handleToggleTheme = () => {
-    const nextTheme = theme === "light" ? "dark" : "light";
-    setTheme(nextTheme);
-    localStorage.setItem("automedic_theme", nextTheme);
-    if (nextTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  };
+  // Modal State: Open Submit Lead popup by default on landing
+  const [isSubmitLeadOpen, setIsSubmitLeadOpen] = useState(true);
 
-  // Drawer & Modal State
-  const [isTestLabOpen, setIsTestLabOpen] = useState(false);
-  const [isSubmitLeadOpen, setIsSubmitLeadOpen] = useState(false);
+  // Workflow Completed Popup State
+  const [completedLeadInfo, setCompletedLeadInfo] = useState<{
+    name: string;
+    email: string;
+    company: string;
+    runId: string;
+  } | null>(null);
 
-  // Summary Row Scope: "This session" (default) vs "All time"
-  const [showAllTime, setShowAllTime] = useState(false);
-
-  // Runs List Scope: Session only vs History
-  const [showHistory, setShowHistory] = useState(false);
+  const monitoredRunIdRef = React.useRef<string | null>(null);
+  const completedRunIdsRef = React.useRef<Set<string>>(new Set());
+  const prevStatusRef = React.useRef<string | null>(null);
 
   // User Selection
   const [userSelectedRunId, setUserSelectedRunId] = useState<string | null>(null);
@@ -77,44 +60,26 @@ export default function DashboardPage() {
     setTimeout(() => setToast(null), 4000);
   }, []);
 
-  // 1. Session Scoping: runs & incidents since last reset
-  const sessionRuns = useMemo(() => {
-    if (showHistory || !chaos?.resetAt) return runs;
-    const resetTs = new Date(chaos.resetAt).getTime();
-    return runs.filter((r) => new Date(r.startedAt).getTime() >= resetTs);
-  }, [runs, chaos?.resetAt, showHistory]);
-
-  const sessionIncidents = useMemo(() => {
-    if (showHistory || !chaos?.resetAt) return allIncidents;
-    const resetTs = new Date(chaos.resetAt).getTime();
-    return allIncidents.filter((i) => new Date(i.createdAt).getTime() >= resetTs);
-  }, [allIncidents, chaos?.resetAt, showHistory]);
-
-  // Runs for summary statistics
-  const summaryRuns = showAllTime ? runs : sessionRuns;
-  const summaryIncidents = showAllTime ? allIncidents : sessionIncidents;
-
-  // 2. Auto-select what matters:
+  // 1. Auto-select what matters from all leads:
   // When nothing is manually selected, select the most recent run with an incident or awaiting attention
   const priorityRunId = useMemo(() => {
-    const displayRuns = sessionRuns;
-    if (displayRuns.length === 0) return null;
+    if (runs.length === 0) return null;
 
     // 1st Priority: awaiting_approval or healing
-    const attentionRun = displayRuns.find(
+    const attentionRun = runs.find(
       (r) => r.status === "awaiting_approval" || r.status === "healing"
     );
     if (attentionRun) return attentionRun.id;
 
     // 2nd Priority: most recent run with an incident
-    const runWithIncident = displayRuns.find((r) =>
-      sessionIncidents.some((i) => i.runId === r.id) || (r.incidentCount && r.incidentCount > 0)
+    const runWithIncident = runs.find((r) =>
+      allIncidents.some((i) => i.runId === r.id) || (r.incidentCount && r.incidentCount > 0)
     );
     if (runWithIncident) return runWithIncident.id;
 
     // Fallback: newest run
-    return displayRuns[0].id;
-  }, [sessionRuns, sessionIncidents]);
+    return runs[0].id;
+  }, [runs, allIncidents]);
 
   // Follow demo run if demo is running
   useEffect(() => {
@@ -124,21 +89,20 @@ export default function DashboardPage() {
   }, [demo?.runId, demo?.status]);
 
   const activeRunId = useMemo(() => {
-    const displayRuns = sessionRuns;
-    if (displayRuns.length === 0) return null;
+    if (runs.length === 0) return null;
 
     if (demo && demo.status !== "idle" && demo.runId) {
-      if (displayRuns.some((r) => r.id === demo.runId)) {
+      if (runs.some((r) => r.id === demo.runId)) {
         return demo.runId;
       }
     }
 
-    if (userSelectedRunId && displayRuns.some((r) => r.id === userSelectedRunId)) {
+    if (userSelectedRunId && runs.some((r) => r.id === userSelectedRunId)) {
       return userSelectedRunId;
     }
 
     return priorityRunId;
-  }, [sessionRuns, demo, userSelectedRunId, priorityRunId]);
+  }, [runs, demo, userSelectedRunId, priorityRunId]);
 
   // Active run data
   const { run, loading: runLoading } = useRun(activeRunId);
@@ -148,10 +112,41 @@ export default function DashboardPage() {
   // Active incident for RunDetail
   const activeIncident = runIncidents.length > 0 ? runIncidents[0] : null;
 
+  // Track workflow completion to show celebration popup
+  useEffect(() => {
+    if (!run) {
+      prevStatusRef.current = null;
+      return;
+    }
+
+    const prevStatus = prevStatusRef.current;
+    const currentStatus = run.status;
+    prevStatusRef.current = currentStatus;
+
+    // Trigger celebration popup when monitored run or active run finishes successfully
+    const isMonitored = monitoredRunIdRef.current === run.id;
+    const wasActive = prevStatus === "running" || prevStatus === "healing";
+    const isCompleted = currentStatus === "success" || currentStatus === "healed";
+
+    if ((isMonitored || wasActive) && isCompleted && !completedRunIdsRef.current.has(run.id)) {
+      completedRunIdsRef.current.add(run.id);
+      monitoredRunIdRef.current = null;
+      const name = (run.inputPayload?.name as string) || "Lead";
+      const email = (run.inputPayload?.email as string) || "";
+      const company = (run.inputPayload?.company as string) || "";
+      setCompletedLeadInfo({
+        name,
+        email,
+        company,
+        runId: run.id,
+      });
+    }
+  }, [run?.status, run?.id, run?.inputPayload]);
+
   // Runs awaiting approval for the top banner
   const awaitingRuns = useMemo(() => {
-    return sessionRuns.filter((r) => r.status === "awaiting_approval");
-  }, [sessionRuns]);
+    return runs.filter((r) => r.status === "awaiting_approval");
+  }, [runs]);
 
   // Keyboard navigation: ArrowUp / ArrowDown to navigate runs
   useEffect(() => {
@@ -165,22 +160,22 @@ export default function DashboardPage() {
       }
 
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-        if (sessionRuns.length === 0) return;
+        if (runs.length === 0) return;
         e.preventDefault();
-        const currentIndex = sessionRuns.findIndex((r) => r.id === activeRunId);
+        const currentIndex = runs.findIndex((r) => r.id === activeRunId);
         if (e.key === "ArrowDown") {
-          const nextIndex = Math.min(currentIndex + 1, sessionRuns.length - 1);
-          setUserSelectedRunId(sessionRuns[nextIndex].id);
+          const nextIndex = Math.min(currentIndex + 1, runs.length - 1);
+          setUserSelectedRunId(runs[nextIndex].id);
         } else if (e.key === "ArrowUp") {
           const prevIndex = Math.max(currentIndex - 1, 0);
-          setUserSelectedRunId(sessionRuns[prevIndex].id);
+          setUserSelectedRunId(runs[prevIndex].id);
         }
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [sessionRuns, activeRunId]);
+  }, [runs, activeRunId]);
 
   // Handlers
   const handleRunSelect = (runId: string) => {
@@ -189,7 +184,8 @@ export default function DashboardPage() {
 
   const handleRunTriggered = (newRunId: string) => {
     setUserSelectedRunId(newRunId);
-    showToast(`Workflow run #${newRunId.slice(0, 8)} started.`);
+    monitoredRunIdRef.current = newRunId;
+    showToast(`Workflow execution started.`);
   };
 
   const handleApproveFix = async (incidentId: string) => {
@@ -338,36 +334,29 @@ export default function DashboardPage() {
         {/* 1. Flat 48px Top Bar + 32px Connected Systems Strip with Inline Stats */}
         <Header
           isOnline={isOnline}
-          theme={theme}
-          onToggleTheme={handleToggleTheme}
-          onOpenTestLab={() => setIsTestLabOpen(true)}
           onOpenSubmitLead={() => setIsSubmitLeadOpen(true)}
           chaos={chaos}
-          runs={summaryRuns}
-          incidents={summaryIncidents}
-          showAllTime={showAllTime}
-          onToggleAllTime={() => setShowAllTime(!showAllTime)}
+          runs={runs}
+          incidents={allIncidents}
         />
 
         {/* 2. Slim 32px Needs-Attention Banner (when ≥1 run needs approval) */}
         <NeedsAttentionBanner
           awaitingRuns={awaitingRuns}
-          incidents={sessionIncidents}
+          incidents={allIncidents}
           onSelectRun={handleRunSelect}
         />
 
         {/* 3. Full-Bleed Flat Body: 320px Left Rail + Canvas (1px hairline divider only) */}
         <div className="flex flex-1 overflow-hidden min-h-0">
-          {/* Left Rail (320px): Runs List */}
+          {/* Left Rail (320px): Runs List — All Lead History */}
           <ErrorBoundary isPanel fallbackTitle="Runs List Unavailable">
             <RunsList
-              runs={sessionRuns}
-              incidents={sessionIncidents}
+              runs={runs}
+              incidents={allIncidents}
               selectedRunId={activeRunId}
               onSelectRun={handleRunSelect}
               loading={runsLoading}
-              showHistory={showHistory}
-              onToggleHistory={() => setShowHistory(!showHistory)}
             />
           </ErrorBoundary>
 
@@ -380,24 +369,10 @@ export default function DashboardPage() {
               loading={runLoading || stepsLoading}
               onApproveFix={handleApproveFix}
               onRejectFix={handleRejectFix}
-              onOpenTestLab={() => setIsTestLabOpen(true)}
               onOpenSubmitLead={() => setIsSubmitLeadOpen(true)}
             />
           </ErrorBoundary>
         </div>
-
-        {/* Test Lab Drawer (Slide-over from right) */}
-        <TestLabDrawer
-          isOpen={isTestLabOpen}
-          onClose={() => setIsTestLabOpen(false)}
-          chaos={chaos}
-          demo={demo}
-          onSetChaosMode={handleSetChaosMode}
-          onStartDemo={handleStartDemo}
-          onSkipDemo={handleSkipDemo}
-          onStopDemo={handleStopDemo}
-          onReset={handleReset}
-        />
 
         {/* Submit a Lead Modal */}
         <SubmitLeadModal
@@ -406,6 +381,66 @@ export default function DashboardPage() {
           onRunTriggered={handleRunTriggered}
           onErrorToast={(msg) => showToast(msg, "error")}
         />
+
+        {/* Workflow Completed Celebration Popup */}
+        {completedLeadInfo && (
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 dark:bg-black/75 backdrop-blur-md animate-fadeIn select-none"
+            onClick={() => setCompletedLeadInfo(null)}
+          >
+            <div
+              className="w-full max-w-md rounded-3xl apple-glass border border-emerald-500/30 shadow-2xl p-7 text-center transition-all"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Apple Celebration Squircle */}
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-white flex items-center justify-center mx-auto mb-4 shadow-lg ring-8 ring-emerald-500/10">
+                <CheckCircleIcon className="w-8 h-8" />
+              </div>
+
+              <h3 className="text-[19px] font-bold text-[var(--text-primary)] tracking-tight">
+                Your lead has been registered
+              </h3>
+
+              <p className="text-[13.5px] text-[var(--text-secondary)] mt-1.5 font-medium leading-relaxed">
+                Check your mail for confirmation
+              </p>
+
+              {Boolean(completedLeadInfo.email) && (
+                <div className="my-5 p-3.5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.04] border border-black/[0.05] dark:border-white/[0.08] text-left text-xs space-y-1.5">
+                  <div className="flex items-center justify-between text-[var(--text-muted)]">
+                    <span>Recipient Email:</span>
+                    <span className="font-semibold text-[var(--text-primary)] font-mono">{completedLeadInfo.email}</span>
+                  </div>
+                  {Boolean(completedLeadInfo.name) && (
+                    <div className="flex items-center justify-between text-[var(--text-muted)]">
+                      <span>Contact Name:</span>
+                      <span className="font-semibold text-[var(--text-primary)]">{completedLeadInfo.name}</span>
+                    </div>
+                  )}
+                  {Boolean(completedLeadInfo.company) && (
+                    <div className="flex items-center justify-between text-[var(--text-muted)]">
+                      <span>Company:</span>
+                      <span className="font-semibold text-[var(--text-primary)]">{completedLeadInfo.company}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400 font-semibold pt-1 border-t border-[var(--border-subtle)]">
+                    <span>Workflow Status:</span>
+                    <span>Enriched & Synced to CRM</span>
+                  </div>
+                </div>
+              )}
+
+              <button
+                onClick={() => setCompletedLeadInfo(null)}
+                className="w-full h-10 rounded-full bg-gradient-to-b from-[#0077ED] to-[#0066CC] hover:from-[#0082FF] hover:to-[#0070E0] text-white font-semibold text-xs shadow-sm transition-all active:scale-95 cursor-pointer mt-1"
+              >
+                View Workflow Execution
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </ErrorBoundary>
   );

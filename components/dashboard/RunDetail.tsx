@@ -12,7 +12,6 @@ interface RunDetailProps {
   loading?: boolean;
   onApproveFix?: (incidentId: string) => Promise<void>;
   onRejectFix?: (incidentId: string) => Promise<void>;
-  onOpenTestLab?: () => void;
   onOpenSubmitLead?: () => void;
 }
 
@@ -23,7 +22,6 @@ export function RunDetail({
   loading,
   onApproveFix,
   onRejectFix,
-  onOpenTestLab,
   onOpenSubmitLead,
 }: RunDetailProps) {
   return (
@@ -34,7 +32,6 @@ export function RunDetail({
       loading={loading}
       onApproveFix={onApproveFix}
       onRejectFix={onRejectFix}
-      onOpenTestLab={onOpenTestLab}
       onOpenSubmitLead={onOpenSubmitLead}
     />
   );

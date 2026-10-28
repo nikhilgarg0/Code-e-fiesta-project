@@ -16,7 +16,6 @@ interface WorkflowCanvasProps {
   loading?: boolean;
   onApproveFix?: (incidentId: string) => Promise<void>;
   onRejectFix?: (incidentId: string) => Promise<void>;
-  onOpenTestLab?: () => void;
   onOpenSubmitLead?: () => void;
 }
 
@@ -27,7 +26,6 @@ export function WorkflowCanvas({
   loading,
   onApproveFix,
   onRejectFix,
-  onOpenTestLab,
   onOpenSubmitLead,
 }: WorkflowCanvasProps) {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
@@ -344,7 +342,7 @@ export function WorkflowCanvas({
               className="h-7 px-3.5 text-[11.5px] font-medium rounded-full bg-gradient-to-b from-[#0077ED] to-[#0066CC] hover:from-[#0082FF] hover:to-[#0070E0] text-white shadow-xs transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
             >
               <PlusIcon className="w-3.5 h-3.5" />
-              <span>Submit a test lead</span>
+              <span>Submit a lead</span>
             </button>
           )}
         </div>
