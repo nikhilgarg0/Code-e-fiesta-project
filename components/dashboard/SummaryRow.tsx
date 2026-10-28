@@ -44,23 +44,23 @@ export function SummaryRow({
   }
 
   return (
-    <div className="rounded-[20px] border border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-[#1c1c1e]/80 backdrop-blur-2xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.45)] px-4 py-2.5 shrink-0 select-none transition-colors duration-150">
+    <div className="rounded-2xl border border-black/[0.06] dark:border-white/[0.08] apple-glass shadow-sm px-4 py-3 shrink-0 select-none transition-colors">
       <div className="flex flex-wrap items-center justify-between gap-3">
         {/* 4 Apple Bento Stat Tiles */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 flex-1 max-w-4xl">
           {/* Tile 1: Runs */}
           <div className="bg-black/[0.025] dark:bg-white/[0.04] border border-black/[0.03] dark:border-white/[0.05] rounded-xl px-3.5 py-2 transition-all">
-            <div className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">
+            <div className="text-[11px] text-[var(--text-muted)] font-medium">
               Runs
             </div>
-            <div className="text-xl font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] mt-0.5 tracking-tight">
+            <div className="text-xl font-semibold text-[var(--text-primary)] mt-0.5 tracking-tight">
               {totalRuns}
             </div>
           </div>
 
           {/* Tile 2: Healed automatically */}
           <div className="bg-black/[0.025] dark:bg-white/[0.04] border border-black/[0.03] dark:border-white/[0.05] rounded-xl px-3.5 py-2 transition-all">
-            <div className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium flex items-center gap-1.5">
+            <div className="text-[11px] text-[var(--text-muted)] font-medium flex items-center gap-1.5">
               <span>Healed automatically</span>
             </div>
             <div className="text-xl font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5 tracking-tight">
@@ -70,8 +70,8 @@ export function SummaryRow({
 
           {/* Tile 3: Needed a human */}
           <div className="bg-black/[0.025] dark:bg-white/[0.04] border border-black/[0.03] dark:border-white/[0.05] rounded-xl px-3.5 py-2 transition-all">
-            <div className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium flex items-center gap-1.5">
-              <span>Needed a human</span>
+            <div className="text-[11px] text-[var(--text-muted)] font-medium flex items-center gap-1.5">
+              <span>Needed operator review</span>
             </div>
             <div className="text-xl font-semibold text-amber-600 dark:text-amber-400 mt-0.5 tracking-tight">
               {neededHumanCount}
@@ -80,10 +80,10 @@ export function SummaryRow({
 
           {/* Tile 4: Avg. recovery time */}
           <div className="bg-black/[0.025] dark:bg-white/[0.04] border border-black/[0.03] dark:border-white/[0.05] rounded-xl px-3.5 py-2 transition-all">
-            <div className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">
+            <div className="text-[11px] text-[var(--text-muted)] font-medium">
               Avg. recovery time
             </div>
-            <div className="text-xl font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] mt-0.5 tracking-tight">
+            <div className="text-xl font-semibold text-[var(--text-primary)] mt-0.5 tracking-tight font-mono">
               {avgRecoveryText}
             </div>
           </div>
@@ -94,12 +94,12 @@ export function SummaryRow({
           <button
             id="scope-toggle-btn"
             onClick={onToggleAllTime}
-            className="text-xs text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 font-medium px-3 py-1.5 rounded-xl bg-black/[0.03] dark:bg-white/[0.05] hover:bg-black/[0.06] dark:hover:bg-white/[0.09] border border-black/[0.04] dark:border-white/[0.06] transition-all flex items-center gap-2 active:scale-95"
+            className="text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-semibold px-3.5 py-1.5 rounded-full bg-black/[0.03] dark:bg-white/[0.05] hover:bg-black/[0.06] dark:hover:bg-white/[0.09] border border-black/[0.04] dark:border-white/[0.06] transition-all flex items-center gap-2 active:scale-95 cursor-pointer"
           >
             <span
               className={`w-2 h-2 rounded-full border transition-colors ${
                 showAllTime
-                  ? "bg-indigo-600 border-indigo-600 shadow-[0_0_6px_rgba(99,102,241,0.5)]"
+                  ? "bg-[#0071E3] border-[#0071E3] shadow-xs"
                   : "bg-transparent border-zinc-400 dark:border-zinc-500"
               }`}
             />

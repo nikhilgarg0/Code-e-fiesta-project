@@ -316,20 +316,20 @@ export default function DashboardPage() {
   return (
     <ErrorBoundary fallbackTitle="AutoMedic Console Recovered">
       <div className="flex flex-col h-screen w-screen overflow-hidden bg-[var(--bg)] text-[var(--text-primary)] font-sans antialiased">
-        {/* Subtle Toast Notification */}
+        {/* Apple Dynamic Notification Capsule */}
         {toast && (
           <div
             role="status"
-            className={`fixed top-3 right-3 z-50 px-3 py-1.5 rounded-[4px] border text-[12px] font-medium shadow-md flex items-center gap-2 animate-fadeIn transition-all ${
+            className={`fixed top-4 right-4 z-50 px-4 py-2 rounded-full apple-glass border shadow-lg text-[12.5px] font-semibold flex items-center gap-2.5 animate-fadeIn transition-all ${
               toast.type === "success"
-                ? "bg-emerald-50 dark:bg-emerald-950/90 border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200"
-                : "bg-rose-50 dark:bg-rose-950/90 border-rose-300 dark:border-rose-800 text-rose-900 dark:text-rose-200"
+                ? "border-emerald-500/30 text-emerald-800 dark:text-emerald-300 bg-emerald-500/10 dark:bg-emerald-500/15"
+                : "border-rose-500/30 text-rose-800 dark:text-rose-300 bg-rose-500/10 dark:bg-rose-500/15"
             }`}
           >
             {toast.type === "success" ? (
-              <CheckCircleIcon className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <CheckCircleIcon className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
             ) : (
-              <AlertTriangleIcon className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0" />
+              <AlertTriangleIcon className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
             )}
             <span>{toast.message}</span>
           </div>

@@ -66,18 +66,18 @@ export default function LeadSubmissionPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-black text-zinc-100 flex flex-col justify-between selection:bg-purple-900 selection:text-white font-sans antialiased">
-      {/* Top Header */}
-      <header className="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur px-6 py-4 flex items-center justify-between">
+    <div className="min-h-screen w-full bg-[var(--bg)] text-[var(--text-primary)] flex flex-col justify-between font-sans antialiased select-none">
+      {/* 1. Apple macOS Style Top Header */}
+      <header className="border-b border-[var(--border)] apple-glass px-6 py-3.5 flex items-center justify-between sticky top-0 z-30">
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-8 h-8 rounded-lg bg-purple-600/20 border border-purple-500/40 flex items-center justify-center text-purple-400 group-hover:scale-105 transition-transform">
-            <ShieldCheckIcon className="w-4 h-4" />
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#0071E3] via-[#4387F6] to-[#5856D6] flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
+            <ShieldCheckIcon className="w-4.5 h-4.5" />
           </div>
           <div>
-            <span className="font-bold text-sm tracking-tight text-white flex items-center gap-1.5">
+            <span className="font-semibold text-[15px] tracking-tight text-[var(--text-primary)] flex items-center gap-2">
               AutoMedic
-              <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-purple-500/10 border border-purple-500/30 text-purple-300">
-                Self-Healing Runtime
+              <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-[#0071E3]/10 text-[var(--accent)] border border-[#0071E3]/20">
+                Live Intake
               </span>
             </span>
           </div>
@@ -85,42 +85,42 @@ export default function LeadSubmissionPage() {
 
         <Link
           href="/"
-          className="px-3 py-1.5 rounded-lg text-xs font-mono bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-800 transition-colors"
+          className="px-4 py-1.5 rounded-full text-xs font-semibold bg-black/[0.04] dark:bg-white/[0.08] hover:bg-black/[0.08] dark:hover:bg-white/[0.12] text-[var(--text-primary)] border border-black/[0.06] dark:border-white/[0.08] transition-all active:scale-95 flex items-center gap-1.5"
         >
-          ← Back to Dashboard
+          <span>← Back to Console</span>
         </Link>
       </header>
 
-      {/* Main Form Container */}
+      {/* 2. Main Form Container */}
       <main className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-lg">
           {submittedRunId ? (
-            /* Success State */
-            <div className="bg-zinc-950 border border-emerald-500/40 rounded-2xl p-8 shadow-[0_0_35px_rgba(16,185,129,0.2)] text-center animate-fadeIn">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-950/60 border border-emerald-500/50 flex items-center justify-center text-emerald-400 mx-auto mb-4 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+            /* Apple Success Receipt State */
+            <div className="apple-glass border border-emerald-500/30 rounded-3xl p-8 shadow-2xl text-center animate-fadeIn">
+              <div className="w-14 h-14 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mx-auto mb-4 shadow-sm">
                 <CheckCircleIcon className="w-7 h-7" />
               </div>
 
-              <h2 className="text-xl font-bold text-white tracking-tight">
-                Lead Ingested & Workflow Dispatched!
+              <h2 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
+                Lead Ingested & Pipeline Dispatched
               </h2>
 
-              <p className="text-xs font-mono text-zinc-400 mt-2 leading-relaxed">
-                Your lead was submitted to the live webhook. AutoMedic is now executing the enrichment, CRM registration, and email verification pipeline.
+              <p className="text-xs text-[var(--text-secondary)] mt-2 leading-relaxed">
+                Your lead was submitted to the webhook runtime. AutoMedic is now executing enrichment, CRM sync, and email dispatch with automated self-healing guardrails.
               </p>
 
-              <div className="my-6 p-3 bg-zinc-900/80 border border-zinc-800 rounded-xl font-mono text-xs flex items-center justify-between">
-                <span className="text-zinc-500">Execution Run ID:</span>
-                <span className="font-bold text-purple-400">#{submittedRunId}</span>
+              <div className="my-6 p-3.5 bg-black/[0.02] dark:bg-white/[0.04] border border-[var(--border)] rounded-2xl font-mono text-xs flex items-center justify-between">
+                <span className="text-[var(--text-muted)]">Execution Run ID:</span>
+                <span className="font-bold text-[var(--accent)]">#{submittedRunId}</span>
               </div>
 
               <div className="flex flex-col gap-2.5">
                 <Link
                   href={`/?runId=${submittedRunId}`}
-                  className="w-full py-2.5 rounded-xl text-xs font-mono font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-500 hover:from-purple-500 hover:to-indigo-500 text-white shadow-[0_0_20px_rgba(168,85,247,0.4)] border border-purple-400/40 transition-all flex items-center justify-center gap-2"
+                  className="w-full py-2.5 rounded-full text-xs font-semibold bg-gradient-to-b from-[#0077ED] to-[#0066CC] hover:from-[#0082FF] hover:to-[#0070E0] text-white shadow-sm transition-all flex items-center justify-center gap-2 active:scale-95"
                 >
                   <SparklesIcon className="w-4 h-4" />
-                  View Live Run in AutoMedic Console →
+                  <span>View Live Execution in Console →</span>
                 </Link>
 
                 <button
@@ -128,32 +128,30 @@ export default function LeadSubmissionPage() {
                     setSubmittedRunId(null);
                     setFormData({ name: "", email: "", company: "", website: "" });
                   }}
-                  className="w-full py-2 rounded-xl text-xs font-mono text-zinc-400 hover:text-zinc-200 transition-colors"
+                  className="w-full py-2 rounded-full text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
                 >
                   Submit Another Lead
                 </button>
               </div>
             </div>
           ) : (
-            /* Form State */
-            <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-40 h-40 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
-
+            /* Apple Form State */
+            <div className="apple-glass border border-black/[0.08] dark:border-white/[0.1] rounded-3xl p-8 shadow-2xl relative overflow-hidden">
               <div className="mb-6">
-                <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+                <h1 className="text-xl font-bold text-[var(--text-primary)] tracking-tight flex items-center gap-2">
                   <span>Submit Live Lead</span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
+                  <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400">
                     Webhook Trigger
                   </span>
                 </h1>
-                <p className="text-xs text-zinc-400 mt-1 font-mono">
-                  Submit a lead to trigger the full AutoMedic pipeline over real services.
+                <p className="text-xs text-[var(--text-secondary)] mt-1.5 leading-relaxed">
+                  Trigger the real AutoMedic workflow across Hunter.io, HubSpot, and Resend with automated anomaly recovery.
                 </p>
               </div>
 
               {/* Sample Presets */}
               <div className="mb-6">
-                <div className="text-[11px] font-mono uppercase text-zinc-500 font-semibold mb-2">
+                <div className="text-[11.5px] font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2">
                   Quick Load Demo Presets:
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -162,7 +160,7 @@ export default function LeadSubmissionPage() {
                       key={p.company}
                       type="button"
                       onClick={() => handlePreset(p)}
-                      className="px-2.5 py-1 text-xs font-mono rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 transition-colors"
+                      className="px-3 py-1 text-xs font-medium rounded-full bg-black/[0.03] dark:bg-white/[0.05] hover:bg-[#0071E3]/10 hover:text-[var(--accent)] hover:border-[#0071E3]/30 border border-black/[0.06] dark:border-white/[0.08] transition-all cursor-pointer active:scale-95"
                     >
                       {p.company}
                     </button>
@@ -172,8 +170,8 @@ export default function LeadSubmissionPage() {
 
               {/* Error Alert */}
               {errorMessage && (
-                <div className="mb-5 p-3 rounded-xl bg-rose-950/60 border border-rose-500/50 text-rose-200 text-xs font-mono flex items-center gap-2">
-                  <AlertTriangleIcon className="w-4 h-4 text-rose-400 shrink-0" />
+                <div className="mb-5 p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2">
+                  <AlertTriangleIcon className="w-4 h-4 shrink-0" />
                   <span>{errorMessage}</span>
                 </div>
               )}
@@ -181,7 +179,7 @@ export default function LeadSubmissionPage() {
               {/* Lead Form */}
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-mono text-zinc-400 mb-1.5 font-medium">
+                  <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5">
                     Full Name *
                   </label>
                   <input
@@ -190,12 +188,12 @@ export default function LeadSubmissionPage() {
                     placeholder="e.g. Elena Rostova"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full bg-zinc-900/80 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white placeholder-zinc-600 font-mono focus:outline-none focus:border-purple-500/60 transition-colors"
+                    className="w-full bg-black/[0.02] dark:bg-white/[0.04] border border-black/[0.08] dark:border-white/[0.1] rounded-xl px-3.5 py-2 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[#0071E3]/30 focus:border-[#0071E3] transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono text-zinc-400 mb-1.5 font-medium">
+                  <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5">
                     Work Email *
                   </label>
                   <input
@@ -204,12 +202,12 @@ export default function LeadSubmissionPage() {
                     placeholder="e.g. elena@biovance.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full bg-zinc-900/80 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white placeholder-zinc-600 font-mono focus:outline-none focus:border-purple-500/60 transition-colors"
+                    className="w-full bg-black/[0.02] dark:bg-white/[0.04] border border-black/[0.08] dark:border-white/[0.1] rounded-xl px-3.5 py-2 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] font-mono focus:outline-none focus:ring-2 focus:ring-[#0071E3]/30 focus:border-[#0071E3] transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono text-zinc-400 mb-1.5 font-medium">
+                  <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5">
                     Company Name *
                   </label>
                   <input
@@ -218,12 +216,12 @@ export default function LeadSubmissionPage() {
                     placeholder="e.g. Biovance Technologies"
                     value={formData.company}
                     onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                    className="w-full bg-zinc-900/80 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white placeholder-zinc-600 font-mono focus:outline-none focus:border-purple-500/60 transition-colors"
+                    className="w-full bg-black/[0.02] dark:bg-white/[0.04] border border-black/[0.08] dark:border-white/[0.1] rounded-xl px-3.5 py-2 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[#0071E3]/30 focus:border-[#0071E3] transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono text-zinc-400 mb-1.5 font-medium">
+                  <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5">
                     Company Website (Optional)
                   </label>
                   <input
@@ -231,14 +229,14 @@ export default function LeadSubmissionPage() {
                     placeholder="e.g. https://biovance.com"
                     value={formData.website}
                     onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                    className="w-full bg-zinc-900/80 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white placeholder-zinc-600 font-mono focus:outline-none focus:border-purple-500/60 transition-colors"
+                    className="w-full bg-black/[0.02] dark:bg-white/[0.04] border border-black/[0.08] dark:border-white/[0.1] rounded-xl px-3.5 py-2 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[#0071E3]/30 focus:border-[#0071E3] transition-all"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full mt-2 py-2.5 rounded-xl text-xs font-mono font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-[0_0_20px_rgba(168,85,247,0.35)] border border-purple-400/40 transition-all flex items-center justify-center gap-2 disabled:opacity-50 active:scale-98"
+                  className="w-full mt-3 py-2.5 rounded-full text-xs font-semibold bg-gradient-to-b from-[#0077ED] to-[#0066CC] hover:from-[#0082FF] hover:to-[#0070E0] text-white shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 active:scale-95 cursor-pointer"
                 >
                   {submitting ? (
                     <RefreshCwIcon className="w-3.5 h-3.5 animate-spin" />
@@ -253,9 +251,9 @@ export default function LeadSubmissionPage() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-zinc-900 p-4 text-center text-xs font-mono text-zinc-600">
-        AutoMedic Autonomous Self-Healing Pipeline • Dispatches via POST /api/webhooks/lead
+      {/* 3. Footer */}
+      <footer className="border-t border-[var(--border)] py-4 text-center text-xs text-[var(--text-muted)] font-medium">
+        AutoMedic Autonomous Self-Healing Pipeline · Ingests via POST /api/webhooks/lead
       </footer>
     </div>
   );
