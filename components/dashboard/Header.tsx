@@ -2,7 +2,7 @@
 "use client";
 
 import React from "react";
-import { ShieldCheckIcon, PlusIcon } from "./Icons";
+import { ShieldCheckIcon, PlusIcon, SidebarIcon } from "./Icons";
 import { ChaosConfig, WorkflowRun, Incident } from "@/lib/types";
 
 interface HeaderProps {
@@ -13,6 +13,8 @@ interface HeaderProps {
   incidents?: Incident[];
   showAllTime?: boolean;
   onToggleAllTime?: () => void;
+  isSidebarOpen?: boolean;
+  onToggleSidebar?: () => void;
 }
 
 export function Header({
@@ -23,6 +25,8 @@ export function Header({
   incidents = [],
   showAllTime = false,
   onToggleAllTime,
+  isSidebarOpen = false,
+  onToggleSidebar,
 }: HeaderProps) {
   const isChaosActive = chaos?.mode && chaos.mode !== "none";
 
@@ -56,6 +60,29 @@ export function Header({
         {/* Left: Brand, Live indicator capsule & System scope */}
         <div className="flex items-center gap-3.5 min-w-0">
           <div className="flex items-center gap-2.5 shrink-0">
+            {/* Apple macOS Sidebar Toggle Button */}
+            {onToggleSidebar && (
+              <button
+                id="toggle-sidebar-btn"
+                onClick={onToggleSidebar}
+                title={isSidebarOpen ? "Hide lead history sidebar" : "Show lead history sidebar"}
+                aria-label="Toggle history sidebar"
+                className={`h-8 px-2.5 rounded-xl border text-[12px] font-medium transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 shrink-0 ${
+                  isSidebarOpen
+                    ? "bg-white/[0.12] text-white border-white/20 shadow-xs"
+                    : "bg-white/[0.04] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-white/[0.08] border-[var(--border)]"
+                }`}
+              >
+                <SidebarIcon className="w-4 h-4 text-[var(--accent)]" />
+                <span className="font-semibold hidden sm:inline">History</span>
+                {runs.length > 0 && (
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/40 dark:bg-white/10 font-mono text-[var(--text-muted)]">
+                    {runs.length}
+                  </span>
+                )}
+              </button>
+            )}
+
             {/* Apple App Icon Squircle */}
             <div className="w-7 h-7 rounded-[9px] bg-gradient-to-tr from-[#0071E3] via-[#4387F6] to-[#5856D6] flex items-center justify-center text-white shadow-sm shrink-0">
               <ShieldCheckIcon className="w-4 h-4" />

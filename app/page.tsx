@@ -18,7 +18,7 @@ import { RunsList } from "@/components/dashboard/RunsList";
 import { RunDetail } from "@/components/dashboard/RunDetail";
 import { SubmitLeadModal } from "@/components/dashboard/SubmitLeadModal";
 import { ErrorBoundary } from "@/components/dashboard/ErrorBoundary";
-import { CheckCircleIcon, AlertTriangleIcon } from "@/components/dashboard/Icons";
+import { CheckCircleIcon, AlertTriangleIcon, SidebarIcon } from "@/components/dashboard/Icons";
 import { ChaosMode } from "@/lib/types";
 
 export default function DashboardPage() {
@@ -36,6 +36,9 @@ export default function DashboardPage() {
 
   // Modal State: Open Submit Lead popup by default on landing
   const [isSubmitLeadOpen, setIsSubmitLeadOpen] = useState(true);
+
+  // History Sidebar: Collapsed by default
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Workflow Completed Popup State
   const [completedLeadInfo, setCompletedLeadInfo] = useState<{
@@ -338,6 +341,8 @@ export default function DashboardPage() {
           chaos={chaos}
           runs={runs}
           incidents={allIncidents}
+          isSidebarOpen={isSidebarOpen}
+          onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
         />
 
         {/* 2. Slim 32px Needs-Attention Banner (when ≥1 run needs approval) */}
@@ -347,31 +352,41 @@ export default function DashboardPage() {
           onSelectRun={handleRunSelect}
         />
 
-        {/* 3. Full-Bleed Flat Body: 320px Left Rail + Canvas (1px hairline divider only) */}
-        <div className="flex flex-1 overflow-hidden min-h-0">
-          {/* Left Rail (320px): Runs List — All Lead History */}
-          <ErrorBoundary isPanel fallbackTitle="Runs List Unavailable">
-            <RunsList
-              runs={runs}
-              incidents={allIncidents}
-              selectedRunId={activeRunId}
-              onSelectRun={handleRunSelect}
-              loading={runsLoading}
-            />
-          </ErrorBoundary>
+        {/* 3. Full-Bleed Flat Body: Collapsible History Sidebar + Canvas */}
+        <div className="flex flex-1 overflow-hidden min-h-0 relative">
+          {/* Left Rail: Runs List — All Lead History (Collapsible, default collapsed) */}
+          {isSidebarOpen && (
+            <div
+              id="lead-history-sidebar"
+              className="w-[320px] min-w-[320px] max-w-[320px] shrink-0 border-r border-[var(--border)] h-full overflow-hidden select-none animate-fadeIn z-20"
+            >
+              <ErrorBoundary isPanel fallbackTitle="Runs List Unavailable">
+                <RunsList
+                  runs={runs}
+                  incidents={allIncidents}
+                  selectedRunId={activeRunId}
+                  onSelectRun={handleRunSelect}
+                  loading={runsLoading}
+                  onCollapse={() => setIsSidebarOpen(false)}
+                />
+              </ErrorBoundary>
+            </div>
+          )}
 
           {/* Right Rail: Canvas & Execution Graph */}
-          <ErrorBoundary isPanel fallbackTitle="Workflow Canvas Unavailable">
-            <RunDetail
-              run={run}
-              steps={steps}
-              incident={activeIncident}
-              loading={runLoading || stepsLoading}
-              onApproveFix={handleApproveFix}
-              onRejectFix={handleRejectFix}
-              onOpenSubmitLead={() => setIsSubmitLeadOpen(true)}
-            />
-          </ErrorBoundary>
+          <div className="flex-1 flex flex-col h-full overflow-hidden min-w-0">
+            <ErrorBoundary isPanel fallbackTitle="Workflow Canvas Unavailable">
+              <RunDetail
+                run={run}
+                steps={steps}
+                incident={activeIncident}
+                loading={runLoading || stepsLoading}
+                onApproveFix={handleApproveFix}
+                onRejectFix={handleRejectFix}
+                onOpenSubmitLead={() => setIsSubmitLeadOpen(true)}
+              />
+            </ErrorBoundary>
+          </div>
         </div>
 
         {/* Submit a Lead Modal */}

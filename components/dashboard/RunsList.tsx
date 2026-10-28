@@ -8,6 +8,7 @@ import {
   AlertTriangleIcon,
   XCircleIcon,
   RefreshCwIcon,
+  SidebarIcon,
 } from "./Icons";
 import { getRunStory, formatRelativeTime } from "@/lib/labels";
 
@@ -17,6 +18,7 @@ interface RunsListProps {
   selectedRunId: string | null;
   onSelectRun: (runId: string) => void;
   loading?: boolean;
+  onCollapse?: () => void;
 }
 
 type FilterType = "all" | "needs_attention" | "healed" | "healthy";
@@ -27,6 +29,7 @@ export function RunsList({
   selectedRunId,
   onSelectRun,
   loading,
+  onCollapse,
 }: RunsListProps) {
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
 
@@ -104,7 +107,28 @@ export function RunsList({
   };
 
   return (
-    <aside className="w-[320px] shrink-0 border-r border-[var(--border)] bg-[var(--surface-subtle)] flex flex-col h-full overflow-hidden select-none">
+    <aside className="w-full flex-1 bg-[var(--surface-subtle)] flex flex-col h-full overflow-hidden select-none">
+      {/* 0. Apple Sidebar Header with Title & Collapse Button */}
+      <div className="h-10 px-3 border-b border-[var(--border)] flex items-center justify-between shrink-0 bg-[var(--surface-subtle)]">
+        <div className="flex items-center gap-2">
+          <span className="text-[12.5px] font-semibold text-[var(--text-primary)]">Lead History</span>
+          <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/[0.04] dark:bg-white/[0.08] text-[var(--text-muted)] font-mono font-medium">
+            {runs.length}
+          </span>
+        </div>
+        {onCollapse && (
+          <button
+            id="collapse-sidebar-btn"
+            onClick={onCollapse}
+            title="Hide history sidebar"
+            aria-label="Hide history sidebar"
+            className="w-7 h-7 rounded-lg hover:bg-black/[0.06] dark:hover:bg-white/[0.08] text-[var(--text-secondary)] hover:text-[var(--text-primary)] flex items-center justify-center transition-all cursor-pointer active:scale-95"
+          >
+            <SidebarIcon className="w-4 h-4 text-[var(--accent)]" />
+          </button>
+        )}
+      </div>
+
       {/* 1. Apple macOS Segmented Filter Control */}
       <div className="p-2.5 shrink-0 border-b border-[var(--border)]">
         <div className="bg-black/[0.04] dark:bg-white/[0.06] p-1 rounded-2xl flex items-center gap-1">
